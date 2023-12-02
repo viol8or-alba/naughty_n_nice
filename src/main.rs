@@ -15,6 +15,11 @@ fn main() {
                 ..Default::default()
             }),
             ..Default::default()
-        }), InitialSetup))
+        }).set(
+            // This sets image filtering to nearest
+            // This is done to prevent textures with low resolution (e.g. pixel art) from being blurred
+            // by linear filtering.
+            ImagePlugin::default_nearest(),
+        ), InitialSetup))
         .run();
 }

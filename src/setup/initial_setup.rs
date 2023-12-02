@@ -31,11 +31,11 @@ fn setup_player(mut commands: Commands, asset_server: Res<AssetServer>, mut text
             sprite_sheet_bundle: SpriteSheetBundle {
                 texture_atlas: texture_atlas_handle,
                 sprite: TextureAtlasSprite::new(animation_indices.foward_start + 1),
-                transform: Transform::from_scale(Vec3::splat(6.0)),
+                // transform: Transform::from_scale(Vec3::splat(6.0)),
                 ..default()
             },
             animation_indices,
-            animation_timer: AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+            animation_timer: AnimationTimer(Timer::from_seconds(0.3, TimerMode::Repeating)),
             character_marker: crate::markers::CharacterMarker,
         }
     );
