@@ -1,11 +1,13 @@
-use bevy::{ecs::bundle::Bundle, sprite::SpriteSheetBundle};
+mod basic_character;
 
-use crate::{animation::{Indices, AnimationTimer}, markers::CharacterMarker};
+pub(crate) use basic_character::BasicCharacter;
+use bevy::ecs::component::Component;
 
-#[derive(Bundle, Clone)]
-pub(crate) struct BasicCharacter{
-    pub(crate) sprite_sheet_bundle: SpriteSheetBundle,
-    pub(crate) animation_indices: Indices,
-    pub(crate) animation_timer: AnimationTimer,
-    pub(crate) character_marker: CharacterMarker,
+#[derive(Component, Clone, Copy)]
+pub(crate) enum Direction {
+    Static,
+    Back,
+    Forward,
+    Left,
+    Right,
 }
