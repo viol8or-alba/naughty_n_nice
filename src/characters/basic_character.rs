@@ -1,17 +1,10 @@
-use bevy::{ecs::bundle::Bundle, sprite::SpriteSheetBundle};
+use bevy::ecs::bundle::Bundle;
 
-use crate::{
-    animation::{AnimationIndices, AnimationTimer},
-    markers::CharacterMarker,
-};
-
-use super::Direction;
+use crate::{animation::Animated, markers::CharacterMarker, moveable::Moveable};
 
 #[derive(Bundle, Clone)]
 pub(crate) struct BasicCharacter {
-    pub(crate) sprite_sheet_bundle: SpriteSheetBundle,
-    pub(crate) animation_indices: AnimationIndices,
-    pub(crate) animation_timer: AnimationTimer,
+    pub(crate) animated: Animated,
     pub(crate) character_marker: CharacterMarker,
-    pub(crate) direction: Direction,
+    pub(crate) moveable: Moveable,
 }

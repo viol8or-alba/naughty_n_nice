@@ -1,7 +1,8 @@
-use crate::animation::{AnimateSprite, AnimationIndices, AnimationTimer};
+use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer, PingPong};
 use crate::characters::{BasicCharacter, Direction};
 use crate::control_input::ControlInput;
 use crate::markers::CameraMarker;
+use crate::moveable::{Moveable, Speed};
 use bevy::prelude::*;
 
 pub(crate) struct InitialSetup;
@@ -39,15 +40,21 @@ fn setup_player(
         right_end: 8,
     };
     commands.spawn(BasicCharacter {
-        sprite_sheet_bundle: SpriteSheetBundle {
-            texture_atlas: texture_atlas_handle,
-            sprite: TextureAtlasSprite::new(animation_indices.back_start + 1),
-            // transform: Transform::from_scale(Vec3::splat(6.0)),
-            ..default()
+        animated: Animated {
+            sprite_sheet_bundle: SpriteSheetBundle {
+                texture_atlas: texture_atlas_handle,
+                sprite: TextureAtlasSprite::new(animation_indices.back_start + 1),
+                // transform: Transform::from_scale(Vec3::splat(6.0)),
+                ..default()
+            },
+            animation_indices,
+            animation_timer: AnimationTimer(Timer::from_seconds(0.3, TimerMode::Repeating)),
+            ping_pong: PingPong::Ping,
         },
-        animation_indices,
-        animation_timer: AnimationTimer(Timer::from_seconds(0.3, TimerMode::Repeating)),
         character_marker: crate::markers::CharacterMarker,
-        direction: Direction::Static,
+        moveable: Moveable {
+            direction: Direction::Static,
+            speed: Speed(1.0),
+        },
     });
 }

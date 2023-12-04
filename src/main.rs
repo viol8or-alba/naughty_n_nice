@@ -5,6 +5,7 @@ mod animation;
 mod characters;
 mod control_input;
 mod markers;
+mod moveable;
 mod setup;
 
 fn main() {
