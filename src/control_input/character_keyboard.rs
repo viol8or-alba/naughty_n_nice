@@ -17,13 +17,13 @@ pub(crate) fn handle_keyboard_for_character(
             moveable.direction = Direction::Static;
         }
 
-        if keyboard_input.just_pressed(KeyCode::W) {
+        if keyboard_input.pressed(KeyCode::W) {
             moveable.direction = Direction::Forward;
-        } else if keyboard_input.just_pressed(KeyCode::A) {
+        } else if keyboard_input.pressed(KeyCode::A) {
             moveable.direction = Direction::Left;
-        } else if keyboard_input.just_pressed(KeyCode::S) {
+        } else if keyboard_input.pressed(KeyCode::S) {
             moveable.direction = Direction::Back;
-        } else if keyboard_input.just_pressed(KeyCode::D) {
+        } else if keyboard_input.pressed(KeyCode::D) {
             moveable.direction = Direction::Right;
         }
     });
