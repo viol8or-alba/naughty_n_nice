@@ -8,6 +8,8 @@ mod markers;
 mod moveable;
 mod setup;
 
+// test swagata
+
 fn main() {
     // Minimal app with single window and non-default title
     App::new()
