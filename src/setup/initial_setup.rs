@@ -3,6 +3,7 @@ use crate::characters::{BasicCharacter, Direction};
 use crate::control_input::ControlInput;
 use crate::markers::CameraMarker;
 use crate::moveable::{Moveable, Speed};
+use crate::game_audio::Audio;
 use bevy::prelude::*;
 
 pub(crate) struct InitialSetup;
@@ -11,6 +12,7 @@ impl Plugin for InitialSetup {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_camera)
             .add_systems(Startup, setup_player)
+            .add_systems(Startup, setup_audio)
             .add_plugins(AnimateSprite)
             .add_plugins(ControlInput);
     }
@@ -58,3 +60,11 @@ fn setup_player(
         },
     });
 }
+
+fn setup_audio(asset_server: Res<AssetServer>, mut commands: Commands) {
+    commands.spawn((AudioBundle {
+        source: asset_server.load("sounds/Windless Slopes.ogg"),
+        ..default()
+    }, Audio));
+}
+

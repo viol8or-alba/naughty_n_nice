@@ -2318,6 +2318,7 @@ name = "naughty_n_nice"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_audio",
 ]
 
 [[package]]

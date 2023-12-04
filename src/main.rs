@@ -7,6 +7,7 @@ mod control_input;
 mod markers;
 mod moveable;
 mod setup;
+mod game_audio;
 
 fn main() {
     // Minimal app with single window and non-default title
