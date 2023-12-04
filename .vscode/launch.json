@@ -4,17 +4,35 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug Rust",
+            "name": "Debug executable 'naughty_n_nice'",
             "cargo": {
                 "args": [
-                    "build", "--manifest-path", "${fileDirname}/../Cargo.toml"
-                ]
-            }
-        }
-
+                    "build",
+                    "--bin=naughty_n_nice",
+                    "--package=naughty_n_nice"
+                ],
+                "filter": {
+                    "name": "naughty_n_nice",
+                    "kind": "bin"
+                }
+            },
+            "linux": {
+                "env": {
+                    "CARGO_MANIFEST_DIR": "${workspaceFolder}",
+                    "LD_LIBRARY_PATH": "${workspaceFolder}/target/debug/deps:${env:HOME}/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib",
+                }
+            },
+            "windows": {
+                "env": {
+                    "CARGO_MANIFEST_DIR": "${workspaceFolder}",
+                    "PATH": "${env:PATH};${workspaceFolder}/target/debug/deps;${env:HOME}/.rustup/toolchains/stable-x86_64-pc-windows-msvc/lib",
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
     ]
 }
