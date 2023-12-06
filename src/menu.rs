@@ -4,9 +4,18 @@ use bevy::{app::AppExit, prelude::*};
 
 use crate::GameState;
 
+// consts
+
 const TEXT_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
+const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
+const HOVERED_PRESSED_BUTTON: Color = Color::rgb(0.25, 0.65, 0.25);
+const PRESSED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
+
+// Tag component used to mark which setting is currently selected
+#[derive(Component)]
+struct SelectedOption;
 
 // All actions that can be triggered from a button click
 #[derive(Component)]
@@ -47,22 +56,22 @@ fn menu_action(
     }
 }
 
-// // This system handles changing all buttons color based on mouse interaction
-// fn button_system(
-//     mut interaction_query: Query<
-//         (&Interaction, &mut BackgroundColor, Option<&SelectedOption>),
-//         (Changed<Interaction>, With<Button>),
-//     >,
-// ) {
-//     for (interaction, mut color, selected) in &mut interaction_query {
-//         *color = match (*interaction, selected) {
-//             (Interaction::Pressed, _) | (Interaction::None, Some(_)) => PRESSED_BUTTON.into(),
-//             (Interaction::Hovered, Some(_)) => HOVERED_PRESSED_BUTTON.into(),
-//             (Interaction::Hovered, None) => HOVERED_BUTTON.into(),
-//             (Interaction::None, None) => NORMAL_BUTTON.into(),
-//         }
-//     }
-// }
+// This system handles changing all buttons color based on mouse interaction
+fn button_system(
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor, Option<&SelectedOption>),
+        (Changed<Interaction>, With<Button>),
+    >,
+) {
+    for (interaction, mut color, selected) in &mut interaction_query {
+        *color = match (*interaction, selected) {
+            (Interaction::Pressed, _) | (Interaction::None, Some(_)) => PRESSED_BUTTON.into(),
+            (Interaction::Hovered, Some(_)) => HOVERED_PRESSED_BUTTON.into(),
+            (Interaction::Hovered, None) => HOVERED_BUTTON.into(),
+            (Interaction::None, None) => NORMAL_BUTTON.into(),
+        }
+    }
+}
 
 // Tag component used to tag entities added on the main menu screen
 #[derive(Component)]
@@ -80,7 +89,7 @@ impl Plugin for MenuPlugin {
             // Common systems to all screens that handles buttons behavior
             .add_systems(
                 Update,
-                (menu_action/* , button_system*/).run_if(in_state(GameState::Menu)),
+                (menu_action, button_system).run_if(in_state(GameState::Menu)),
             );
     }
 }
@@ -149,7 +158,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     // Display the game name
                     parent.spawn(
                         TextBundle::from_section(
-                            "Bevy Game Menu UI",
+                            "Naughty n Nice",
                             TextStyle {
                                 font_size: 80.0,
                                 color: TEXT_COLOR,
@@ -162,9 +171,8 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         }),
                     );
 
-                    // Display three buttons for each action available from the main menu:
+                    // Display two buttons for each action available from the main menu:
                     // - new game
-                    // - settings
                     // - quit
                     parent
                         .spawn((
