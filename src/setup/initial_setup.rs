@@ -1,9 +1,9 @@
 use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer, PingPong};
-use crate::characters::{BasicCharacter, Direction};
+use crate::characters::{BasicCharacter, CharacterState, CharacterWithStatus, Direction, Status};
 use crate::control_input::ControlInput;
+use crate::game_audio::Audio;
 use crate::markers::CameraMarker;
 use crate::moveable::{Moveable, Speed};
-use crate::game_audio::Audio;
 use bevy::prelude::*;
 
 pub(crate) struct InitialSetup;
@@ -27,7 +27,7 @@ fn setup_player(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
-    let texture_handle = asset_server.load("sprites/flamingo.png");
+    let texture_handle = asset_server.load("sprites/deer.png");
     let texture_atlas =
         TextureAtlas::from_grid(texture_handle, Vec2::new(48.0, 48.0), 3, 4, None, None);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
@@ -40,31 +40,42 @@ fn setup_player(
         left_end: 5,
         right_start: 6,
         right_end: 8,
+        celebrate_start: 12,
+        celebrate_end: 14,
+        die_start: 15,
+        die_end: 17,
     };
-    commands.spawn(BasicCharacter {
-        animated: Animated {
-            sprite_sheet_bundle: SpriteSheetBundle {
-                texture_atlas: texture_atlas_handle,
-                sprite: TextureAtlasSprite::new(animation_indices.back_start + 1),
-                // transform: Transform::from_scale(Vec3::splat(6.0)),
-                ..default()
+    commands.spawn(CharacterWithStatus {
+        basic_character: BasicCharacter {
+            animated: Animated {
+                sprite_sheet_bundle: SpriteSheetBundle {
+                    texture_atlas: texture_atlas_handle,
+                    sprite: TextureAtlasSprite::new(animation_indices.back_start + 1),
+                    // transform: Transform::from_scale(Vec3::splat(6.0)),
+                    ..default()
+                },
+                animation_indices,
+                animation_timer: AnimationTimer(Timer::from_seconds(0.3, TimerMode::Repeating)),
+                ping_pong: PingPong::Ping,
             },
-            animation_indices,
-            animation_timer: AnimationTimer(Timer::from_seconds(0.3, TimerMode::Repeating)),
-            ping_pong: PingPong::Ping,
+            character_marker: crate::markers::CharacterMarker,
+            moveable: Moveable {
+                direction: Direction::Static,
+                speed: Speed(1.0),
+            },
         },
-        character_marker: crate::markers::CharacterMarker,
-        moveable: Moveable {
-            direction: Direction::Static,
-            speed: Speed(1.0),
+        status: Status {
+            state: CharacterState::Alive,
         },
     });
 }
 
 fn setup_audio(asset_server: Res<AssetServer>, mut commands: Commands) {
-    commands.spawn((AudioBundle {
-        source: asset_server.load("sounds/Windless Slopes.ogg"),
-        ..default()
-    }, Audio));
+    commands.spawn((
+        AudioBundle {
+            source: asset_server.load("sounds/Windless Slopes.ogg"),
+            ..default()
+        },
+        Audio,
+    ));
 }
-

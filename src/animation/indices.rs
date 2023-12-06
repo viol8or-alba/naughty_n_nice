@@ -10,4 +10,8 @@ pub(crate) struct AnimationIndices {
     pub(crate) left_end: usize,
     pub(crate) right_start: usize,
     pub(crate) right_end: usize,
+    pub(crate) celebrate_start: usize,
+    pub(crate) celebrate_end: usize,
+    pub(crate) die_start: usize,
+    pub(crate) die_end: usize,
 }

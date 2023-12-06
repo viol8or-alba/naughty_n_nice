@@ -1,10 +1,10 @@
 use bevy::app::{Plugin, Update};
 
-mod character_keyboard;
 mod audio_keyboard;
+mod character_keyboard;
 
-use character_keyboard::handle_keyboard_for_character;
 use audio_keyboard::mute;
+use character_keyboard::handle_keyboard_for_character;
 
 pub(crate) struct ControlInput;
 
