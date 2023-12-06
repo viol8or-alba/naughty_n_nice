@@ -9,6 +9,7 @@ use bevy::{
     input::{keyboard::KeyCode, Input},
 };
 
+/// Handle toggling the background music on and off.
 pub(crate) fn mute(
     keyboard_input: Res<Input<KeyCode>>,
     music_controller: Query<&AudioSink, With<Audio>>,
