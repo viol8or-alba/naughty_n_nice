@@ -1,3 +1,5 @@
+#![allow(clippy::type_complexity)]
+
 use bevy::prelude::*;
 use setup::InitialSetup;
 
@@ -6,8 +8,17 @@ mod characters;
 mod control_input;
 mod game_audio;
 mod markers;
+mod menu;
 mod moveable;
 mod setup;
+
+// Enum that will be used as a global state for the game
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+pub(crate) enum GameState {
+    Game,
+    #[default]
+    Menu,
+}
 
 fn main() {
     // Minimal app with single window and non-default title
@@ -29,5 +40,8 @@ fn main() {
                 ),
             InitialSetup,
         ))
+        // Declare the game state, whose starting value is determined by the `Default` trait
+        .add_state::<GameState>()
+        .add_plugins(menu::MenuPlugin)
         .run();
 }

@@ -82,7 +82,7 @@ fn setup_player(
                 sprite_sheet_bundle: SpriteSheetBundle {
                     texture_atlas: texture_atlas_handle,
                     sprite: TextureAtlasSprite::new(animation_indices.back_start + 1),
-                        ..default()
+                    ..default()
                 },
                 animation_indices,
                 animation_timer: AnimationTimer(Timer::from_seconds(0.3, TimerMode::Repeating)),
@@ -112,12 +112,11 @@ fn setup_audio(asset_server: Res<AssetServer>, mut commands: Commands) {
 }
 
 fn setup_walls(asset_server: Res<AssetServer>, mut commands: Commands) {
-        // Walls
-        commands.spawn(WallBundle::new(WallLocation::Left));
-        commands.spawn(WallBundle::new(WallLocation::Right));
-        commands.spawn(WallBundle::new(WallLocation::Bottom));
-        commands.spawn(WallBundle::new(WallLocation::Top));
-   
+    // Walls
+    commands.spawn(WallBundle::new(WallLocation::Left));
+    commands.spawn(WallBundle::new(WallLocation::Right));
+    commands.spawn(WallBundle::new(WallLocation::Bottom));
+    commands.spawn(WallBundle::new(WallLocation::Top));
 }
 
 #[derive(Component)]
@@ -194,4 +193,3 @@ impl WallBundle {
         }
     }
 }
-

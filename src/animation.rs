@@ -12,7 +12,7 @@ pub(crate) use timer::AnimationTimer;
 
 /// The animation is defined with three frames. For example when walking
 /// left we have left leg forward, both legs together, right leg forward.
-/// To get a natural looking walk, we need to reverse that animation 
+/// To get a natural looking walk, we need to reverse that animation
 /// sequence after right leg forward. This flag will indicate whether the
 /// animation is running forwards (Ping) or backward (Pong).
 #[derive(Component, Clone, Copy)]

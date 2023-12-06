@@ -95,12 +95,12 @@ fn handle_status_alive(
     mut transform: bevy::prelude::Mut<'_, Transform>,
     delta_seconds: f32,
 ) {
-            // Which direction are we moving in
+    // Which direction are we moving in
     (sprite.index, *ping_pong) = match moveable.direction {
-                // Not moving, draw the sprite facing the camera
+        // Not moving, draw the sprite facing the camera
         Direction::Static => (indices.back_start + 1, PingPong::Ping),
 
-                // We are moving
+        // We are moving
         Direction::Back => handle_back(
             sprite.index,
             &ping_pong,
