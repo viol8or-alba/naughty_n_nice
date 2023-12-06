@@ -8,6 +8,8 @@ use bevy::{
 
 use crate::{characters::Direction, markers::CharacterMarker, moveable::Moveable};
 
+/// Handle control of the player sprite. Updates the [`Moveable`] component as
+/// required.
 pub(crate) fn handle_keyboard_for_character(
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<&mut Moveable, With<CharacterMarker>>,

@@ -19,6 +19,8 @@ use crate::{
 
 use super::{AnimationIndices, AnimationTimer, PingPong};
 
+/// Defines a plugin used to animate and move the sprite based on its current
+/// [`Direction`].
 pub(crate) struct AnimateSprite;
 
 impl Plugin for AnimateSprite {
@@ -27,6 +29,14 @@ impl Plugin for AnimateSprite {
     }
 }
 
+/// Query for a sprite with the [`CharacterMarker`] component. We want:
+/// - its transform (to set its position in the scene)
+/// - animation indices (to determine the current frame)
+/// - the animation timer (is it time to display the next frame/move)
+/// - the actual sprite to animate
+/// - the animation sequence (forward or back)
+/// - the currently set direction (from keyboard input, handled by the
+/// [`crate::control_input::ControlInput`] plugin)
 fn animate_sprite(
     time: Res<Time>,
     mut query: Query<
@@ -46,6 +56,8 @@ fn animate_sprite(
         let delta = time.delta();
         let delta_seconds = delta.as_secs_f32();
         timer.0.tick(delta);
+
+        // Time for the next frame?
         if timer.0.just_finished() {
             match status.state {
                 CharacterState::Alive => handle_status_alive(
@@ -57,12 +69,14 @@ fn animate_sprite(
                     delta_seconds,
                 ),
                 CharacterState::Celebrating => {
+                    // Run celebraion animation once
                     (sprite.index, *ping_pong) = determine_frame_oneshot(
                         indices.celebrate_start..=indices.celebrate_end,
                         &sprite.index,
                     )
                 }
                 CharacterState::Dead => {
+                    // Run death animation once
                     (sprite.index, *ping_pong) =
                         determine_frame_oneshot(indices.die_start..=indices.die_end, &sprite.index)
                 }
@@ -71,6 +85,8 @@ fn animate_sprite(
     }
 }
 
+/// Handle movement of a character that has neither completed the level (`Celebrating`)
+/// or failed to complete the level (`Dead`).
 fn handle_status_alive(
     mut sprite: bevy::prelude::Mut<'_, TextureAtlasSprite>,
     mut ping_pong: bevy::prelude::Mut<'_, PingPong>,
@@ -79,8 +95,12 @@ fn handle_status_alive(
     mut transform: bevy::prelude::Mut<'_, Transform>,
     delta_seconds: f32,
 ) {
+    // Which direction are we moving in
     (sprite.index, *ping_pong) = match moveable.direction {
+        // Not moving, draw the sprite facing the camera
         Direction::Static => (indices.back_start + 1, PingPong::Ping),
+
+        // We are moving
         Direction::Back => handle_back(
             sprite.index,
             &ping_pong,
@@ -112,6 +132,8 @@ fn handle_status_alive(
     }
 }
 
+/// Handle moving towards the camera: update the transform and
+/// determine the next animation frame to draw.
 fn handle_back(
     sprite_index: usize,
     ping_pong: &PingPong,
@@ -127,6 +149,8 @@ fn handle_back(
     )
 }
 
+/// Handle moving away from the camera: update the transform and
+/// determine the next animation frame to draw.
 fn handle_forward(
     sprite_index: usize,
     ping_pong: &PingPong,
@@ -142,6 +166,8 @@ fn handle_forward(
     )
 }
 
+/// Handle moving left: update the transform and determine the next
+/// animation frame to draw.
 fn handle_left(
     sprite_index: usize,
     ping_pong: &PingPong,
@@ -157,6 +183,8 @@ fn handle_left(
     )
 }
 
+/// Handle moving left: update the transform and determine the next
+/// animation frame to draw.
 fn handle_right(
     sprite_index: usize,
     ping_pong: &PingPong,
@@ -172,6 +200,11 @@ fn handle_right(
     )
 }
 
+/// Based on the given range of frames, current frame index
+/// and animation direction, determine the next frame to
+/// display.
+/// Return the index of the next frame and whether we are playing
+/// the animation forward or backward.
 fn determine_frame_moving(
     animation_range: RangeInclusive<usize>,
     sprite_index: &usize,
@@ -183,6 +216,7 @@ fn determine_frame_moving(
         return (*animation_range.start(), PingPong::Ping);
     }
 
+    // Determine the animation frame sequence
     match ping_pong {
         PingPong::Ping => {
             // Reached last frame, reverse animation
@@ -205,6 +239,8 @@ fn determine_frame_moving(
     }
 }
 
+/// For a one-shot animation, determine which frame in the given
+/// range to display next based on the given index.
 fn determine_frame_oneshot(
     animation_range: RangeInclusive<usize>,
     sprite_index: &usize,
