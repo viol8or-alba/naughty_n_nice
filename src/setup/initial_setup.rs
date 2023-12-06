@@ -2,20 +2,21 @@ use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer
 use crate::characters::{BasicCharacter, CharacterState, CharacterWithStatus, Direction, Status};
 use crate::control_input::ControlInput;
 use crate::game_audio::Audio;
-use crate::markers::CameraMarker;
+use crate::markers::{CameraMarker, CharacterMarker};
 use crate::moveable::{Moveable, Speed};
 use bevy::prelude::*;
+use bevy::sprite::collide_aabb::{collide, Collision};
 
 /* Constants */
 
-const WALL_THICKNESS: f32 = 10.0;
+pub(crate) const WALL_THICKNESS: f32 = 10.0;
 
 // x coordinates
-const LEFT_WALL: f32 = -450.;
-const RIGHT_WALL: f32 = 450.;
+pub(crate) const LEFT_WALL: f32 = -450.;
+pub(crate) const RIGHT_WALL: f32 = 450.;
 // y coordinates
-const BOTTOM_WALL: f32 = -300.;
-const TOP_WALL: f32 = 300.;
+pub(crate) const BOTTOM_WALL: f32 = -300.;
+pub(crate) const TOP_WALL: f32 = 300.;
 
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
@@ -121,6 +122,12 @@ fn setup_walls(asset_server: Res<AssetServer>, mut commands: Commands) {
 
 #[derive(Component)]
 struct Collider;
+
+#[derive(Event, Default)]
+struct CollisionEvent;
+
+#[derive(Component)]
+struct Present;
 
 /// Which side of the arena is this wall located on?
 enum WallLocation {
