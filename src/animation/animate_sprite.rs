@@ -69,12 +69,14 @@ fn animate_sprite(
                     delta_seconds,
                 ),
                 CharacterState::Celebrating => {
+                    // Run celebraion animation once
                     (sprite.index, *ping_pong) = determine_frame_oneshot(
                         indices.celebrate_start..=indices.celebrate_end,
                         &sprite.index,
                     )
                 }
                 CharacterState::Dead => {
+                    // Run death animation once
                     (sprite.index, *ping_pong) =
                         determine_frame_oneshot(indices.die_start..=indices.die_end, &sprite.index)
                 }
@@ -83,6 +85,8 @@ fn animate_sprite(
     }
 }
 
+/// Handle movement of a character that has neither completed the level (`Celebrating`)
+/// or failed to complete the level (`Dead`).
 fn handle_status_alive(
     mut sprite: bevy::prelude::Mut<'_, TextureAtlasSprite>,
     mut ping_pong: bevy::prelude::Mut<'_, PingPong>,
@@ -235,6 +239,8 @@ fn determine_frame_moving(
     }
 }
 
+/// For a one-shot animation, determine which frame in the given
+/// range to display next based on the given index.
 fn determine_frame_oneshot(
     animation_range: RangeInclusive<usize>,
     sprite_index: &usize,

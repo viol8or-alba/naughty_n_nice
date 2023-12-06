@@ -18,6 +18,10 @@ pub(crate) enum Direction {
     Right,
 }
 
+/// A character can be in one of the following state:
+/// - `Alive` and able to move
+/// - `Celebrating` completed the level
+/// - `Dead` failed to complete the level
 #[derive(Clone, Copy)]
 pub(crate) enum CharacterState {
     Alive,
