@@ -63,10 +63,8 @@ fn animate_sprite(
                     )
                 }
                 CharacterState::Dead => {
-                    (sprite.index, *ping_pong) = determine_frame_oneshot(
-                        indices.die_start..=indices.die_end,
-                        &sprite.index,
-                    )
+                    (sprite.index, *ping_pong) =
+                        determine_frame_oneshot(indices.die_start..=indices.die_end, &sprite.index)
                 }
             }
         }

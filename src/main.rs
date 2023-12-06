@@ -1,3 +1,5 @@
+#![allow(clippy::type_complexity)]
+
 use bevy::prelude::*;
 use setup::InitialSetup;
 
@@ -41,6 +43,5 @@ fn main() {
         // Declare the game state, whose starting value is determined by the `Default` trait
         .add_state::<GameState>()
         .add_plugins(menu::MenuPlugin)
-        // .add_plugins((splash::SplashPlugin, menu::MenuPlugin, game::GamePlugin))
         .run();
 }
