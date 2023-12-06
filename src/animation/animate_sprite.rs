@@ -196,6 +196,11 @@ fn handle_right(
     )
 }
 
+/// Based on the given range of frames, current frame index
+/// and animation direction, determine the next frame to
+/// display.
+/// Return the index of the next frame and whether we are playing
+/// the animation forward or backward.
 fn determine_frame_moving(
     animation_range: RangeInclusive<usize>,
     sprite_index: &usize,
