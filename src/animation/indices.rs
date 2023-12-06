@@ -1,5 +1,7 @@
 use bevy::ecs::component::Component;
 
+/// Stores the indices within the sprite sheet for the start and end
+/// frames of each of moving forward, backward, left and right.
 #[derive(Component, Clone)]
 pub(crate) struct AnimationIndices {
     pub(crate) forward_start: usize,

@@ -20,6 +20,8 @@ const TOP_WALL: f32 = 300.;
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 
+/// Plugin to set up initial scene with camera, player, and audio. Adds plugins
+/// for sprite animation and handling keyboard control of sprite.
 pub(crate) struct InitialSetup;
 
 impl Plugin for InitialSetup {
@@ -35,19 +37,29 @@ impl Plugin for InitialSetup {
     }
 }
 
+/// Add the default 2D camera bundle.
 fn setup_camera(mut commands: Commands) {
     commands.spawn((Camera2dBundle::default(), CameraMarker));
 }
 
+/// Setup the player. This will load up the player's sprite sheet and create a
+/// texture atlas from it. The sprite sheet has three frames of animation for
+/// each of the four movement directions. Each frame is displayed at 300ms intervals.
 fn setup_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
+    // Load the sprite sheet
     let texture_handle = asset_server.load("sprites/deer.png");
+
+    // Create the texture atlas: the sprite sheet is four rows with three animation frames
+    // per row. Each frame is a 48x48 bitmap.
     let texture_atlas =
         TextureAtlas::from_grid(texture_handle, Vec2::new(48.0, 48.0), 3, 6, None, None);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
+
+    // Set the start and end frames for each sprite animation.
     let animation_indices = AnimationIndices {
         forward_start: 9,
         forward_end: 11,
@@ -62,14 +74,15 @@ fn setup_player(
         die_start: 15,
         die_end: 17,
     };
+
+    // Spawn the character in the scene. Character will start facing the camera.
     commands.spawn(CharacterWithStatus {
         basic_character: BasicCharacter {
             animated: Animated {
                 sprite_sheet_bundle: SpriteSheetBundle {
                     texture_atlas: texture_atlas_handle,
                     sprite: TextureAtlasSprite::new(animation_indices.back_start + 1),
-                    // transform: Transform::from_scale(Vec3::splat(6.0)),
-                    ..default()
+                        ..default()
                 },
                 animation_indices,
                 animation_timer: AnimationTimer(Timer::from_seconds(0.3, TimerMode::Repeating)),
@@ -87,6 +100,7 @@ fn setup_player(
     });
 }
 
+/// Load the background audio into the asset server.
 fn setup_audio(asset_server: Res<AssetServer>, mut commands: Commands) {
     commands.spawn((
         AudioBundle {

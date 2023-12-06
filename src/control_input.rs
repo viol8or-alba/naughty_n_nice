@@ -6,6 +6,7 @@ mod character_keyboard;
 use audio_keyboard::mute;
 use character_keyboard::handle_keyboard_for_character;
 
+/// This plugin handles keyboard input.
 pub(crate) struct ControlInput;
 
 impl Plugin for ControlInput {
