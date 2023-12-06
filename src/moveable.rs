@@ -5,7 +5,7 @@ use crate::characters::Direction;
 #[derive(Clone)]
 pub(crate) struct Speed(pub f32);
 
-#[derive(Component, Clone)]
+#[derive(Component)]
 pub(crate) struct Moveable {
     pub(crate) direction: Direction,
     pub(crate) speed: Speed,
