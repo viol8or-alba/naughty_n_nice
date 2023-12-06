@@ -15,6 +15,7 @@ use crate::{
     characters::{CharacterState, Direction, Status},
     markers::CharacterMarker,
     moveable::Moveable,
+    setup::{LEFT_WALL, RIGHT_WALL, WALL_THICKNESS, TOP_WALL, BOTTOM_WALL},
 };
 
 use super::{AnimationIndices, AnimationTimer, PingPong};
@@ -119,7 +120,12 @@ fn handle_back(
     transform: &mut Transform,
     delta_seconds: f32,
 ) -> (usize, PingPong) {
-    transform.translation.y -= 150. * delta_seconds;
+    let new_position = transform.translation.y - 150. * delta_seconds;
+    let top_bound = TOP_WALL - WALL_THICKNESS / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
+    let bottom_bound = BOTTOM_WALL + WALL_THICKNESS / 2.0 + 15.0; // TODO replace 5 with character height/2 + padding
+
+    transform.translation.y = new_position.clamp(bottom_bound, top_bound);
+
     determine_frame_moving(
         indices.back_start..=indices.back_end,
         &sprite_index,
@@ -134,7 +140,12 @@ fn handle_forward(
     transform: &mut Transform,
     delta_seconds: f32,
 ) -> (usize, PingPong) {
-    transform.translation.y += 150. * delta_seconds;
+    let new_position = transform.translation.y + 150. * delta_seconds;
+    let top_bound = TOP_WALL - WALL_THICKNESS / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
+    let bottom_bound = BOTTOM_WALL + WALL_THICKNESS / 2.0 + 15.0; // TODO replace 5 with character height/2 + padding
+
+    transform.translation.y = new_position.clamp(bottom_bound, top_bound);
+
     determine_frame_moving(
         indices.forward_start..=indices.forward_end,
         &sprite_index,
@@ -149,6 +160,12 @@ fn handle_left(
     transform: &mut Transform,
     delta_seconds: f32,
 ) -> (usize, PingPong) {
+    let new_position = transform.translation.x - 150. * delta_seconds;
+    let left_bound = LEFT_WALL + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
+    let right_bound = RIGHT_WALL - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
+
+    transform.translation.x = new_position.clamp(left_bound, right_bound);
+
     transform.translation.x -= 150. * delta_seconds;
     determine_frame_moving(
         indices.left_start..=indices.left_end,
@@ -164,7 +181,12 @@ fn handle_right(
     transform: &mut Transform,
     delta_seconds: f32,
 ) -> (usize, PingPong) {
-    transform.translation.x += 150. * delta_seconds;
+    let new_position = transform.translation.x + 150. * delta_seconds;
+    let left_bound = LEFT_WALL + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
+    let right_bound = RIGHT_WALL - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
+
+    transform.translation.x = new_position.clamp(left_bound, right_bound);
+
     determine_frame_moving(
         indices.right_start..=indices.right_end,
         &sprite_index,
