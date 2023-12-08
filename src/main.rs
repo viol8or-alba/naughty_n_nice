@@ -1,6 +1,6 @@
 #![allow(clippy::type_complexity)]
 
-use bevy::prelude::*;
+use bevy::{prelude::*, window::WindowResolution};
 use setup::InitialSetup;
 
 mod animation;
@@ -28,6 +28,8 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: "Naughty And Nice".to_string(),
+                        resolution: WindowResolution::new(480., 288.),
+                        resizable: false,
                         ..Default::default()
                     }),
                     ..Default::default()

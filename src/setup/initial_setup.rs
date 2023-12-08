@@ -6,7 +6,7 @@ use crate::markers::{CameraMarker, CharacterMarker};
 use crate::moveable::{Moveable, Speed};
 use bevy::prelude::*;
 use bevy::sprite::collide_aabb::{collide, Collision};
-use bevy_ecs_ldtk::{LdtkPlugin, LdtkWorldBundle, LevelSelection};
+use bevy_ecs_ldtk::{LdtkPlugin, LdtkWorldBundle, LevelSelection, LevelSpawnBehavior, LdtkSettings};
 
 /* Constants */
 
@@ -33,6 +33,12 @@ impl Plugin for InitialSetup {
             .add_systems(Startup, setup_audio)
             .add_systems(Startup, setup_walls)
             .insert_resource(ClearColor(BACKGROUND_COLOR))
+            .insert_resource(LdtkSettings{
+                level_spawn_behavior: LevelSpawnBehavior::UseWorldTranslation{
+                    load_level_neighbors: false,
+                },
+                ..Default::default()
+            })
             .insert_resource(LevelSelection::Index(0))
             .add_plugins(LdtkPlugin)
             .add_plugins(AnimateSprite)
@@ -47,6 +53,7 @@ fn setup_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.spawn(LdtkWorldBundle {
         ldtk_handle: asset_server.load("levels/ldtk/Naughty_n_Nice.ldtk"),
+        transform: Transform::from_xyz(0., 0., 0.),
         ..Default::default()
     });
 }
@@ -91,6 +98,7 @@ fn setup_player(
                 sprite_sheet_bundle: SpriteSheetBundle {
                     texture_atlas: texture_atlas_handle,
                     sprite: TextureAtlasSprite::new(animation_indices.back_start + 1),
+                    transform: Transform::from_xyz(0., 0., 10.),
                     ..default()
                 },
                 animation_indices,

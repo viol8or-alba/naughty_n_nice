@@ -108,9 +108,9 @@ fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands
 fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Common style for all buttons on the screen
     let button_style = Style {
-        width: Val::Px(250.0),
-        height: Val::Px(65.0),
-        margin: UiRect::all(Val::Px(20.0)),
+        width: Val::Percent(50.0),
+        height: Val::Percent(50.0),
+        margin: UiRect::all(Val::Px(2.0)),
         justify_content: JustifyContent::Center,
         align_items: AlignItems::Center,
         ..default()
@@ -124,7 +124,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..default()
     };
     let button_text_style = TextStyle {
-        font_size: 40.0,
+        font_size: 20.0,
         color: TEXT_COLOR,
         ..default()
     };
@@ -133,8 +133,10 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         .spawn((
             NodeBundle {
                 style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
+                    width: Val::Px(320.),
+                    height: Val::Px(120.),
+                    align_self: AlignSelf::Center,
+                    justify_self: JustifySelf::Center,
                     align_items: AlignItems::Center,
                     justify_content: JustifyContent::Center,
                     ..default()
@@ -160,13 +162,13 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         TextBundle::from_section(
                             "Naughty n Nice",
                             TextStyle {
-                                font_size: 80.0,
+                                font_size: 35.0,
                                 color: TEXT_COLOR,
                                 ..default()
                             },
                         )
                         .with_style(Style {
-                            margin: UiRect::all(Val::Px(50.0)),
+                            margin: UiRect::all(Val::Px(10.0)),
                             ..default()
                         }),
                     );
