@@ -6,6 +6,7 @@ use crate::markers::{CameraMarker, CharacterMarker};
 use crate::moveable::{Moveable, Speed};
 use bevy::prelude::*;
 use bevy::sprite::collide_aabb::{collide, Collision};
+use bevy_ecs_ldtk::{LdtkPlugin, LdtkWorldBundle, LevelSelection};
 
 /* Constants */
 
@@ -27,11 +28,13 @@ pub(crate) struct InitialSetup;
 
 impl Plugin for InitialSetup {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_camera)
+        app.add_systems(Startup, setup_scene)
             .add_systems(Startup, setup_player)
             .add_systems(Startup, setup_audio)
             .add_systems(Startup, setup_walls)
             .insert_resource(ClearColor(BACKGROUND_COLOR))
+            .insert_resource(LevelSelection::Index(0))
+            .add_plugins(LdtkPlugin)
             .add_plugins(AnimateSprite)
             .add_plugins(ControlInput)
             .add_systems(Update, bevy::window::close_on_esc);
@@ -39,8 +42,13 @@ impl Plugin for InitialSetup {
 }
 
 /// Add the default 2D camera bundle.
-fn setup_camera(mut commands: Commands) {
+fn setup_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((Camera2dBundle::default(), CameraMarker));
+
+    commands.spawn(LdtkWorldBundle {
+        ldtk_handle: asset_server.load("levels/ldtk/Naughty_n_Nice.ldtk"),
+        ..Default::default()
+    });
 }
 
 /// Setup the player. This will load up the player's sprite sheet and create a
