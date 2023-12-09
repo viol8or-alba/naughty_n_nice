@@ -113,9 +113,7 @@ fn setup_player(
                 speed: Speed(1.0),
             },
         },
-        status: Status {
-            state: CharacterState::Alive,
-        },
+        status: Status::new(100),
     });
 }
 

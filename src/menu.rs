@@ -109,10 +109,11 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Common style for all buttons on the screen
     let button_style = Style {
         width: Val::Percent(50.0),
-        height: Val::Percent(50.0),
+        height: Val::Percent(25.0),
         margin: UiRect::all(Val::Px(2.0)),
         justify_content: JustifyContent::Center,
         align_items: AlignItems::Center,
+        align_self: AlignSelf::End,
         ..default()
     };
     let button_icon_style = Style {
@@ -133,11 +134,9 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         .spawn((
             NodeBundle {
                 style: Style {
-                    width: Val::Px(320.),
-                    height: Val::Px(176.),
-                    align_self: AlignSelf::Center,
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::End,
+                    align_self: AlignSelf::Stretch,
+                    align_items: AlignItems::Start,
+                    justify_content: JustifyContent::Center,
                     ..default()
                 },
                 ..default()
@@ -145,31 +144,22 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             OnMainMenuScreen,
         ))
         .with_children(|parent| {
+            // Display splash bitmap
+            let splash_image: Handle<Image> = asset_server.load("images/splash.png");
             parent
-                .spawn(NodeBundle {
+                .spawn(ImageBundle {
                     style: Style {
+                        align_self: AlignSelf::End,
+                        width: Val::Px(480.),
+                        height: Val::Px(288.),
+                        justify_content: JustifyContent::SpaceAround,
                         flex_direction: FlexDirection::Column,
-                        align_items: AlignItems::End,
-                        ..default()
+                        ..Default::default()
                     },
-                    background_color: Color::CRIMSON.into(),
+                    image: UiImage::new(splash_image),
                     ..default()
                 })
                 .with_children(|parent| {
-                    // Display spash bitmap
-                    let splash_image: Handle<Image> = asset_server.load("images/splash.png");
-                    parent.spawn(ImageBundle {
-                        style: Style {
-                            position_type: PositionType::Absolute,
-                            align_self: AlignSelf::Center,
-                            align_items: AlignItems::Stretch,
-                            width: Val::Px(320.),
-                            height: Val::Px(176.),
-                            ..Default::default()
-                        },
-                        image: UiImage::new(splash_image),
-                        ..default()
-                    });
                     // Display the game name
                     parent.spawn(
                         TextBundle::from_section(
@@ -182,6 +172,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         )
                         .with_style(Style {
                             margin: UiRect::all(Val::Px(10.0)),
+                            align_self: AlignSelf::End,
                             ..default()
                         }),
                     );

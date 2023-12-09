@@ -48,19 +48,21 @@ fn animate_sprite(
             &mut TextureAtlasSprite,
             &mut PingPong,
             &Moveable,
-            &Status,
+            &mut Status,
         ),
         With<CharacterMarker>,
     >,
 ) {
-    for (transform, indices, mut timer, mut sprite, mut ping_pong, moveable, status) in &mut query {
+    for (transform, indices, mut timer, mut sprite, mut ping_pong, moveable, mut status) in
+        &mut query
+    {
         let delta = time.delta();
         let delta_seconds = delta.as_secs_f32();
         timer.0.tick(delta);
 
         // Time for the next frame?
         if timer.0.just_finished() {
-            match status.state {
+            match status.state() {
                 CharacterState::Alive => handle_status_alive(
                     sprite,
                     ping_pong,
@@ -74,7 +76,11 @@ fn animate_sprite(
                     (sprite.index, *ping_pong) = determine_frame_oneshot(
                         indices.celebrate_start..=indices.celebrate_end,
                         &sprite.index,
-                    )
+                    );
+
+                    if sprite.index == indices.celebrate_end {
+                        status.end_celebration();
+                    }
                 }
                 CharacterState::Dead => {
                     // Run death animation once
