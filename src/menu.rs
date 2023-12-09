@@ -6,7 +6,7 @@ use crate::GameState;
 
 // consts
 
-const TEXT_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
+const TEXT_COLOR: Color = Color::rgb(0.5, 0.5, 0.5);
 
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
 const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
@@ -134,11 +134,10 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             NodeBundle {
                 style: Style {
                     width: Val::Px(320.),
-                    height: Val::Px(120.),
+                    height: Val::Px(176.),
                     align_self: AlignSelf::Center,
-                    justify_self: JustifySelf::Center,
                     align_items: AlignItems::Center,
-                    justify_content: JustifyContent::Center,
+                    justify_content: JustifyContent::End,
                     ..default()
                 },
                 ..default()
@@ -150,13 +149,27 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 .spawn(NodeBundle {
                     style: Style {
                         flex_direction: FlexDirection::Column,
-                        align_items: AlignItems::Center,
+                        align_items: AlignItems::End,
                         ..default()
                     },
                     background_color: Color::CRIMSON.into(),
                     ..default()
                 })
                 .with_children(|parent| {
+                    // Display spash bitmap
+                    let splash_image: Handle<Image> = asset_server.load("images/splash.png");
+                    parent.spawn(ImageBundle {
+                        style: Style {
+                            position_type: PositionType::Absolute,
+                            align_self: AlignSelf::Center,
+                            align_items: AlignItems::Stretch,
+                            width: Val::Px(320.),
+                            height: Val::Px(176.),
+                            ..Default::default()
+                        },
+                        image: UiImage::new(splash_image),
+                        ..default()
+                    });
                     // Display the game name
                     parent.spawn(
                         TextBundle::from_section(

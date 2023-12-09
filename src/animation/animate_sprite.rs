@@ -15,7 +15,7 @@ use crate::{
     characters::{CharacterState, Direction, Status},
     markers::CharacterMarker,
     moveable::Moveable,
-    setup::{LEFT_WALL, RIGHT_WALL, WALL_THICKNESS, TOP_WALL, BOTTOM_WALL},
+    setup::{BOTTOM_WALL, LEFT_WALL, RIGHT_WALL, TOP_WALL, WALL_THICKNESS},
 };
 
 use super::{AnimationIndices, AnimationTimer, PingPong};
