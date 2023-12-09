@@ -1,9 +1,11 @@
 mod basic_character;
 mod character_with_status;
+mod inventory;
 mod status;
 
 pub(crate) use basic_character::BasicCharacter;
 pub(crate) use character_with_status::CharacterWithStatus;
+pub(crate) use inventory::Inventory;
 pub(crate) use status::Status;
 
 /// Used to store current movement direction of a sprite.

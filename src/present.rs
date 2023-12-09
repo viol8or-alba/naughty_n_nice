@@ -2,7 +2,8 @@ use bevy::ecs::component::Component;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub(crate) enum PresentType {
-    Naughty,
+    // Naughty stores the number of hit points to remove
+    Naughty(u8),
     Nice,
 }
 

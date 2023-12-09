@@ -1,9 +1,11 @@
 use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer, PingPong};
-use crate::characters::{BasicCharacter, CharacterState, CharacterWithStatus, Direction, Status};
+use crate::characters::{
+    BasicCharacter, CharacterState, CharacterWithStatus, Direction, Inventory, Status,
+};
 use crate::collision::CollisionHandler;
 use crate::control_input::ControlInput;
 use crate::game_audio::Audio;
-use crate::markers::{CameraMarker};
+use crate::markers::CameraMarker;
 use crate::moveable::{Moveable, Speed};
 use crate::present::Present;
 use bevy::prelude::*;
@@ -118,6 +120,7 @@ fn setup_player(
             },
         },
         status: Status::new(100),
+        inventory: Inventory::new(),
     });
 }
 
@@ -129,7 +132,7 @@ fn setup_presents(mut commands: Commands, asset_server: Res<AssetServer>) {
             transform: Transform::from_xyz(100., 100., 5.),
             ..Default::default()
         },
-        Present::new(crate::present::PresentType::Naughty),
+        Present::new(crate::present::PresentType::Nice),
     ));
 }
 

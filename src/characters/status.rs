@@ -28,7 +28,7 @@ impl Status {
         // Prevent overflows of our unsigned health value:
         // we want to remove more health than we have, we're
         // dead.
-        if self.health < to_remove{
+        if self.health < to_remove {
             self.state = CharacterState::Dead;
             return;
         }
