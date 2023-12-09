@@ -53,7 +53,9 @@ fn animate_sprite(
         With<CharacterMarker>,
     >,
 ) {
-    for (transform, indices, mut timer, mut sprite, mut ping_pong, moveable, mut status) in &mut query {
+    for (transform, indices, mut timer, mut sprite, mut ping_pong, moveable, mut status) in
+        &mut query
+    {
         let delta = time.delta();
         let delta_seconds = delta.as_secs_f32();
         timer.0.tick(delta);
@@ -76,7 +78,7 @@ fn animate_sprite(
                         &sprite.index,
                     );
 
-                    if sprite.index == indices.celebrate_end{
+                    if sprite.index == indices.celebrate_end {
                         status.end_celebration();
                     }
                 }

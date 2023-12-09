@@ -24,22 +24,22 @@ impl Status {
     }
 
     /// Remove the given number of health points.
-    pub(crate) fn remove_health(&mut self, to_remove: u8){
+    pub(crate) fn remove_health(&mut self, to_remove: u8) {
         self.health -= to_remove;
 
-        if self.health == 0{
+        if self.health == 0 {
             self.state = CharacterState::Dead;
         }
     }
 
     /// Indicate that the character is celebrating.
-    pub(crate) fn celebrate(&mut self){
+    pub(crate) fn celebrate(&mut self) {
         self.state = CharacterState::Celebrating;
     }
 
     /// End the character celebration.
-    pub(crate) fn end_celebration(&mut self){
-        if self.state == CharacterState::Celebrating{
+    pub(crate) fn end_celebration(&mut self) {
+        if self.state == CharacterState::Celebrating {
             self.state = CharacterState::Alive;
         }
     }
