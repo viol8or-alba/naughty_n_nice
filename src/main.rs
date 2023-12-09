@@ -5,11 +5,13 @@ use setup::InitialSetup;
 
 mod animation;
 mod characters;
+mod collision;
 mod control_input;
 mod game_audio;
 mod markers;
 mod menu;
 mod moveable;
+mod present;
 mod setup;
 
 // Enum that will be used as a global state for the game
