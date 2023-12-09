@@ -25,6 +25,14 @@ impl Status {
 
     /// Remove the given number of health points.
     pub(crate) fn remove_health(&mut self, to_remove: u8) {
+        // Prevent overflows of our unsigned health value:
+        // we want to remove more health than we have, we're
+        // dead.
+        if self.health < to_remove {
+            self.state = CharacterState::Dead;
+            return;
+        }
+
         self.health -= to_remove;
 
         if self.health == 0 {

@@ -1,11 +1,15 @@
 use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer, PingPong};
-use crate::characters::{BasicCharacter, CharacterState, CharacterWithStatus, Direction, Status};
+use crate::characters::{
+    BasicCharacter, CharacterState, CharacterWithStatus, Direction, Inventory, Status,
+};
+use crate::collision::CollisionHandler;
 use crate::control_input::ControlInput;
 use crate::game_audio::Audio;
-use crate::markers::{CameraMarker, CharacterMarker};
+use crate::markers::CameraMarker;
 use crate::moveable::{Moveable, Speed};
+use crate::present::Present;
 use bevy::prelude::*;
-use bevy::sprite::collide_aabb::{collide, Collision};
+
 use bevy_ecs_ldtk::{
     LdtkPlugin, LdtkSettings, LdtkWorldBundle, LevelSelection, LevelSpawnBehavior,
 };
@@ -32,6 +36,7 @@ impl Plugin for InitialSetup {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_scene)
             .add_systems(Startup, setup_player)
+            .add_systems(Startup, setup_presents)
             .add_systems(Startup, setup_audio)
             .add_systems(Startup, setup_walls)
             .insert_resource(ClearColor(BACKGROUND_COLOR))
@@ -45,6 +50,7 @@ impl Plugin for InitialSetup {
             .add_plugins(LdtkPlugin)
             .add_plugins(AnimateSprite)
             .add_plugins(ControlInput)
+            .add_plugins(CollisionHandler)
             .add_systems(Update, bevy::window::close_on_esc);
     }
 }
@@ -114,7 +120,20 @@ fn setup_player(
             },
         },
         status: Status::new(100),
+        inventory: Inventory::new(),
     });
+}
+
+/// Randomly spawn presents.
+fn setup_presents(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("sprites/Gifts_Green.png"),
+            transform: Transform::from_xyz(100., 100., 5.),
+            ..Default::default()
+        },
+        Present::new(crate::present::PresentType::Nice),
+    ));
 }
 
 /// Load the background audio into the asset server.
@@ -141,9 +160,6 @@ struct Collider;
 
 #[derive(Event, Default)]
 struct CollisionEvent;
-
-#[derive(Component)]
-struct Present;
 
 /// Which side of the arena is this wall located on?
 enum WallLocation {
