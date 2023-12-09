@@ -22,7 +22,7 @@ pub(crate) enum Direction {
 /// - `Alive` and able to move
 /// - `Celebrating` completed the level
 /// - `Dead` failed to complete the level
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub(crate) enum CharacterState {
     Alive,
     Celebrating,
