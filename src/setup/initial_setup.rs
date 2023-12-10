@@ -35,6 +35,7 @@ const SCORE_NAUGHTY_TEXT_PADDING_LEFT: Val = Val::Px(WINDOW_WIDTH - 120.);
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 const TEXT_COLOR: Color = Color::rgb(0.2, 0.2, 0.9);
+const RED_TEXT_COLOR: Color = Color::rgb(0.9, 0.2, 0.5);
 const SCORE_COLOR: Color = Color::rgb(0.1, 0.1, 0.1);
 
 // Coordinate range for spawning presents, make sure we don't spawn partially outside the screen
@@ -87,7 +88,7 @@ impl Plugin for InitialSetup {
             .add_plugins(AnimateSprite)
             .add_plugins(ControlInput)
             .add_plugins(CollisionHandler)
-            .add_systems(Update, (bevy::window::close_on_esc, update_stats, end_game));
+            .add_systems(Update, (bevy::window::close_on_esc, update_stats, end_game_win, end_game_lose));
     }
 }
 
@@ -357,19 +358,21 @@ impl WallBundle {
     }
 }
 
-// Check for win screen condition
-
-
-fn end_game(
+// Check for game over you win
+fn end_game_win(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut player_query: Query<(&mut Status, &mut Inventory), With<CharacterMarker>>,
+    player_query: Query<(&mut Status, &mut Inventory), With<CharacterMarker>>,
 ) {
     let Ok((status, inventory)) = player_query.get_single() else {
         return;
     };
 
     if inventory.number_of_presents() != 5 {
+        return;
+    }
+
+    if !status.game_over {
         return;
     }
 
@@ -407,6 +410,71 @@ fn end_game(
                             TextStyle {
                                 font_size: 35.0,
                                 color: TEXT_COLOR,
+                                ..default()
+                            },
+                        )
+                        .with_style(Style {
+                            margin: UiRect::all(Val::Px(10.0)),
+                            align_self: AlignSelf::End,
+                            ..default()
+                        }),
+                    );
+                });
+        });
+}
+
+// Check for game over you lose
+fn end_game_lose(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    player_query: Query<(&mut Status, &mut Inventory), With<CharacterMarker>>,
+) {
+    let Ok((status, inventory)) = player_query.get_single() else {
+        return;
+    };
+
+    if inventory.number_of_presents() == 5 {
+        return;
+    }
+
+    if !status.game_over {
+        return;
+    }
+
+    commands
+        .spawn((NodeBundle {
+            style: Style {
+                align_self: AlignSelf::Stretch,
+                align_items: AlignItems::Start,
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
+            ..default()
+        },))
+        .with_children(|parent| {
+            // Display splash bitmap
+            let splash_image: Handle<Image> = asset_server.load("images/splash.png");
+            parent
+                .spawn(ImageBundle {
+                    style: Style {
+                        align_self: AlignSelf::End,
+                        width: Val::Px(480.),
+                        height: Val::Px(288.),
+                        justify_content: JustifyContent::SpaceAround,
+                        flex_direction: FlexDirection::Column,
+                        ..Default::default()
+                    },
+                    image: UiImage::new(splash_image),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    // Display the game name
+                    parent.spawn(
+                        TextBundle::from_section(
+                            "Oh no! You lost!",
+                            TextStyle {
+                                font_size: 35.0,
+                                color: RED_TEXT_COLOR,
                                 ..default()
                             },
                         )
