@@ -6,7 +6,7 @@ use super::CharacterState;
 #[derive(Component)]
 pub(crate) struct Status {
     state: CharacterState,
-    health: u8,
+    pub(crate) health: u8,
 }
 
 impl Status {

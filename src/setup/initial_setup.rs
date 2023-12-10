@@ -1,13 +1,11 @@
 use std::ops::Range;
 
 use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer, PingPong};
-use crate::characters::{
-    BasicCharacter, CharacterState, CharacterWithStatus, Direction, Inventory, Status,
-};
+use crate::characters::{BasicCharacter, CharacterWithStatus, Direction, Inventory, Status};
 use crate::collision::CollisionHandler;
 use crate::control_input::ControlInput;
 use crate::game_audio::Audio;
-use crate::markers::CameraMarker;
+use crate::markers::{CameraMarker, CharacterMarker};
 use crate::moveable::{Moveable, Speed};
 use crate::present::{Present, PresentType};
 use crate::{WINDOW_HEIGHT, WINDOW_WIDTH};
@@ -29,13 +27,33 @@ pub(crate) const RIGHT_WALL: f32 = 450.;
 pub(crate) const BOTTOM_WALL: f32 = -300.;
 pub(crate) const TOP_WALL: f32 = 300.;
 
+const SCOREBOARD_FONT_SIZE: f32 = 20.0;
+const SCORE_BASIC_TEXT_PADDING: Val = Val::Px(10.0);
+const SCORE_NAUGHTY_TEXT_PADDING_LEFT: Val = Val::Px(WINDOW_WIDTH - 120.);
+
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
+const TEXT_COLOR: Color = Color::rgb(0.2, 0.2, 0.9);
+const SCORE_COLOR: Color = Color::rgb(0.1, 0.1, 0.1);
 
 // Coordinate range for spawning presents, make sure we don't spawn partially outside the screen
 // or on the back wall.
 const X_RANGE: Range<f32> = -(WINDOW_WIDTH + 24.) / 20.0..(WINDOW_WIDTH - 24.) / 20.0;
 const Y_RANGE: Range<f32> = -(WINDOW_HEIGHT + 24.) / 20.0..(WINDOW_HEIGHT - 48.) / 20.0;
+
+fn update_stats(
+    player_query: Query<(&Status, &Inventory), With<CharacterMarker>>,
+    mut query_nice: Query<&mut Text, With<CounterNice>>,
+    mut query_naughty: Query<&mut Text, (With<Health>, Without<CounterNice>)>,
+) {
+    if let Ok((status, inventory)) = player_query.get_single() {
+        let mut text = query_nice.single_mut();
+        text.sections[1].value = inventory.number_of_presents().to_string();
+
+        let mut text = query_naughty.single_mut();
+        text.sections[1].value = status.health.to_string();
+    }
+}
 
 /// Plugin to set up initial scene with camera, player, and audio. Adds plugins
 /// for sprite animation and handling keyboard control of sprite.
@@ -48,6 +66,7 @@ impl Plugin for InitialSetup {
             .add_systems(Startup, setup_presents)
             .add_systems(Startup, setup_audio)
             .add_systems(Startup, setup_walls)
+            .add_systems(Startup, setup_scoreboard)
             .insert_resource(ClearColor(BACKGROUND_COLOR))
             .insert_resource(LdtkSettings {
                 level_spawn_behavior: LevelSpawnBehavior::UseWorldTranslation {
@@ -60,7 +79,7 @@ impl Plugin for InitialSetup {
             .add_plugins(AnimateSprite)
             .add_plugins(ControlInput)
             .add_plugins(CollisionHandler)
-            .add_systems(Update, bevy::window::close_on_esc);
+            .add_systems(Update, (bevy::window::close_on_esc, update_stats));
     }
 }
 
@@ -172,12 +191,68 @@ fn setup_audio(asset_server: Res<AssetServer>, mut commands: Commands) {
     ));
 }
 
-fn setup_walls(asset_server: Res<AssetServer>, mut commands: Commands) {
+fn setup_walls(mut commands: Commands) {
     // Walls
     commands.spawn(WallBundle::new(WallLocation::Left));
     commands.spawn(WallBundle::new(WallLocation::Right));
     commands.spawn(WallBundle::new(WallLocation::Bottom));
     commands.spawn(WallBundle::new(WallLocation::Top));
+}
+
+#[derive(Component)]
+struct CounterNice;
+
+#[derive(Component)]
+struct Health;
+
+fn setup_scoreboard(mut commands: Commands) {
+    // Scoreboard: present counters
+    commands.spawn(
+        (TextBundle::from_sections([
+            TextSection::new(
+                "Presents: ",
+                TextStyle {
+                    font_size: SCOREBOARD_FONT_SIZE,
+                    color: TEXT_COLOR,
+                    ..default()
+                },
+            ),
+            TextSection::from_style(TextStyle {
+                font_size: SCOREBOARD_FONT_SIZE,
+                color: SCORE_COLOR,
+                ..default()
+            }),
+        ])
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            top: SCORE_BASIC_TEXT_PADDING,
+            left: SCORE_BASIC_TEXT_PADDING,
+            ..default()
+        }), CounterNice),
+    );
+    commands.spawn(
+        (TextBundle::from_sections([
+            TextSection::new(
+                "Health: ",
+                TextStyle {
+                    font_size: SCOREBOARD_FONT_SIZE,
+                    color: TEXT_COLOR,
+                    ..default()
+                },
+            ),
+            TextSection::from_style(TextStyle {
+                font_size: SCOREBOARD_FONT_SIZE,
+                color: SCORE_COLOR,
+                ..default()
+            }),
+        ])
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            top: SCORE_BASIC_TEXT_PADDING,
+            left: SCORE_NAUGHTY_TEXT_PADDING_LEFT,
+            ..default()
+        }), Health),
+    );
 }
 
 #[derive(Component)]

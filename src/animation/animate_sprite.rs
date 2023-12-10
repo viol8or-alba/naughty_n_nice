@@ -15,7 +15,8 @@ use crate::{
     characters::{CharacterState, Direction, Status},
     markers::CharacterMarker,
     moveable::Moveable,
-    setup::{BOTTOM_WALL, LEFT_WALL, RIGHT_WALL, TOP_WALL, WALL_THICKNESS}, WINDOW_WIDTH, WINDOW_HEIGHT,
+    setup::WALL_THICKNESS,
+    WINDOW_HEIGHT, WINDOW_WIDTH,
 };
 
 use super::{AnimationIndices, AnimationTimer, PingPong};
@@ -149,8 +150,8 @@ fn handle_back(
     delta_seconds: f32,
 ) -> (usize, PingPong) {
     let new_position = transform.translation.y - 300. * delta_seconds;
-    let top_bound = (WINDOW_HEIGHT/2.) - 30. / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
-    let bottom_bound = -(WINDOW_HEIGHT/2.) + WALL_THICKNESS / 2.0 + 18.0; // TODO replace 5 with character height/2 + padding
+    let top_bound = (WINDOW_HEIGHT / 2.) - 30. / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
+    let bottom_bound = -(WINDOW_HEIGHT / 2.) + WALL_THICKNESS / 2.0 + 18.0; // TODO replace 5 with character height/2 + padding
 
     transform.translation.y = new_position.clamp(bottom_bound, top_bound);
 
@@ -171,8 +172,8 @@ fn handle_forward(
     delta_seconds: f32,
 ) -> (usize, PingPong) {
     let new_position = transform.translation.y + 300. * delta_seconds;
-    let top_bound = (WINDOW_HEIGHT/2.) - 30. / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
-    let bottom_bound = -(WINDOW_HEIGHT/2.) + WALL_THICKNESS / 2.0 + 18.0; // TODO replace 5 with character height/2 + padding
+    let top_bound = (WINDOW_HEIGHT / 2.) - 30. / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
+    let bottom_bound = -(WINDOW_HEIGHT / 2.) + WALL_THICKNESS / 2.0 + 18.0; // TODO replace 5 with character height/2 + padding
 
     transform.translation.y = new_position.clamp(bottom_bound, top_bound);
 
@@ -193,8 +194,8 @@ fn handle_left(
     delta_seconds: f32,
 ) -> (usize, PingPong) {
     let new_position = transform.translation.x - 300. * delta_seconds;
-    let left_bound = -(WINDOW_WIDTH/2.) + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
-    let right_bound = (WINDOW_WIDTH/2.) - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
+    let left_bound = -(WINDOW_WIDTH / 2.) + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
+    let right_bound = (WINDOW_WIDTH / 2.) - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
 
     transform.translation.x = new_position.clamp(left_bound, right_bound);
 
@@ -215,8 +216,8 @@ fn handle_right(
     delta_seconds: f32,
 ) -> (usize, PingPong) {
     let new_position = transform.translation.x + 300. * delta_seconds;
-    let left_bound = -(WINDOW_WIDTH/2.) + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
-    let right_bound = (WINDOW_WIDTH/2.) - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
+    let left_bound = -(WINDOW_WIDTH / 2.) + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
+    let right_bound = (WINDOW_WIDTH / 2.) - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
 
     transform.translation.x = new_position.clamp(left_bound, right_bound);
 
