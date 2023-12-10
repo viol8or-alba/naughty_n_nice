@@ -14,6 +14,9 @@ mod moveable;
 mod present;
 mod setup;
 
+pub(crate) const WINDOW_WIDTH: f32 = 480.;
+pub(crate) const WINDOW_HEIGHT: f32 = 288.;
+
 // Enum that will be used as a global state for the game
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub(crate) enum GameState {
@@ -30,7 +33,7 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: "Naughty And Nice".to_string(),
-                        resolution: WindowResolution::new(480., 288.),
+                        resolution: WindowResolution::new(WINDOW_WIDTH, WINDOW_HEIGHT),
                         resizable: false,
                         ..Default::default()
                     }),
