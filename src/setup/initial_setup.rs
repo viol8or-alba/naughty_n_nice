@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer, PingPong};
 use crate::characters::{
     BasicCharacter, CharacterState, CharacterWithStatus, Direction, Inventory, Status,
@@ -29,6 +31,11 @@ pub(crate) const TOP_WALL: f32 = 300.;
 
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
+
+// Coordinate range for spawning presents, make sure we don't spawn partially outside the screen
+// or on the back wall.
+const X_RANGE: Range<f32> = -(SCREEN_WIDTH + 24.) / 20.0..(SCREEN_WIDTH - 24.) / 20.0;
+const Y_RANGE: Range<f32> = -(SCREEN_HEIGHT + 24.) / 20.0..(SCREEN_HEIGHT - 48.) / 20.0;
 
 /// Plugin to set up initial scene with camera, player, and audio. Adds plugins
 /// for sprite animation and handling keyboard control of sprite.
@@ -133,19 +140,15 @@ fn setup_presents(mut commands: Commands, asset_server: Res<AssetServer>) {
     let green_present = "sprites/Gifts_Green.png".to_string();
 
     for count in 0..10 {
-        let present_type = if count < 5 {
-            PresentType::Naughty(20)
+        let (present_type, current_present_image) = if count < 5 {
+            (PresentType::Naughty(20), &red_present)
         } else {
-            PresentType::Nice
+            (PresentType::Nice, &green_present)
         };
 
-        let current_present_image = if rand::random() {
-            &red_present
-        } else {
-            &green_present
-        };
-        let x = rng.gen_range(-SCREEN_WIDTH / 2.0..SCREEN_WIDTH / 2.0);
-        let y = rng.gen_range(-SCREEN_HEIGHT / 2.0..SCREEN_HEIGHT / 2.0);
+        // Range is set to a tenth of screen size and then multiplied up to cut down on clustering of presents
+        let x = rng.gen_range(X_RANGE) * 10.;
+        let y = rng.gen_range(Y_RANGE) * 10.;
 
         commands.spawn((
             SpriteBundle {
