@@ -10,7 +10,7 @@ use crate::game_audio::Audio;
 use crate::markers::CameraMarker;
 use crate::moveable::{Moveable, Speed};
 use crate::present::{Present, PresentType};
-use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
+use crate::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use bevy::prelude::*;
 
 use bevy_ecs_ldtk::{
@@ -34,8 +34,8 @@ const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 
 // Coordinate range for spawning presents, make sure we don't spawn partially outside the screen
 // or on the back wall.
-const X_RANGE: Range<f32> = -(SCREEN_WIDTH + 24.) / 20.0..(SCREEN_WIDTH - 24.) / 20.0;
-const Y_RANGE: Range<f32> = -(SCREEN_HEIGHT + 24.) / 20.0..(SCREEN_HEIGHT - 48.) / 20.0;
+const X_RANGE: Range<f32> = -(WINDOW_WIDTH + 24.) / 20.0..(WINDOW_WIDTH - 24.) / 20.0;
+const Y_RANGE: Range<f32> = -(WINDOW_HEIGHT + 24.) / 20.0..(WINDOW_HEIGHT - 48.) / 20.0;
 
 /// Plugin to set up initial scene with camera, player, and audio. Adds plugins
 /// for sprite animation and handling keyboard control of sprite.
