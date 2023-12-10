@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer, PingPong};
 use crate::characters::{
     BasicCharacter, CharacterState, CharacterWithStatus, Direction, Inventory, Status,
@@ -7,12 +9,14 @@ use crate::control_input::ControlInput;
 use crate::game_audio::Audio;
 use crate::markers::CameraMarker;
 use crate::moveable::{Moveable, Speed};
-use crate::present::Present;
+use crate::present::{Present, PresentType};
+use crate::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use bevy::prelude::*;
 
 use bevy_ecs_ldtk::{
     LdtkPlugin, LdtkSettings, LdtkWorldBundle, LevelSelection, LevelSpawnBehavior,
 };
+use rand::Rng;
 
 /* Constants */
 
@@ -27,6 +31,11 @@ pub(crate) const TOP_WALL: f32 = 300.;
 
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
+
+// Coordinate range for spawning presents, make sure we don't spawn partially outside the screen
+// or on the back wall.
+const X_RANGE: Range<f32> = -(WINDOW_WIDTH + 24.) / 20.0..(WINDOW_WIDTH - 24.) / 20.0;
+const Y_RANGE: Range<f32> = -(WINDOW_HEIGHT + 24.) / 20.0..(WINDOW_HEIGHT - 48.) / 20.0;
 
 /// Plugin to set up initial scene with camera, player, and audio. Adds plugins
 /// for sprite animation and handling keyboard control of sprite.
@@ -126,14 +135,30 @@ fn setup_player(
 
 /// Randomly spawn presents.
 fn setup_presents(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn((
-        SpriteBundle {
-            texture: asset_server.load("sprites/Gifts_Green.png"),
-            transform: Transform::from_xyz(100., 100., 5.),
-            ..Default::default()
-        },
-        Present::new(crate::present::PresentType::Nice),
-    ));
+    let mut rng = rand::thread_rng();
+    let red_present = "sprites/Gifts_Red.png".to_string();
+    let green_present = "sprites/Gifts_Green.png".to_string();
+
+    for count in 0..10 {
+        let (present_type, current_present_image) = if count < 5 {
+            (PresentType::Naughty(20), &red_present)
+        } else {
+            (PresentType::Nice, &green_present)
+        };
+
+        // Range is set to a tenth of screen size and then multiplied up to cut down on clustering of presents
+        let x = rng.gen_range(X_RANGE) * 10.;
+        let y = rng.gen_range(Y_RANGE) * 10.;
+
+        commands.spawn((
+            SpriteBundle {
+                texture: asset_server.load(current_present_image),
+                transform: Transform::from_xyz(x, y, 5.),
+                ..Default::default()
+            },
+            Present::new(present_type),
+        ));
+    }
 }
 
 /// Load the background audio into the asset server.
