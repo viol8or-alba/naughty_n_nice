@@ -1,5 +1,6 @@
 use bevy::ecs::component::Component;
 
+#[allow(unused)]
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub(crate) enum PresentType {
     // Naughty stores the number of hit points to remove
