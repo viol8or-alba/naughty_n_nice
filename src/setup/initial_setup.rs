@@ -1,3 +1,4 @@
+use crate::WINDOW_WIDTH;
 use crate::animation::{AnimateSprite, Animated, AnimationIndices, AnimationTimer, PingPong};
 use crate::characters::{BasicCharacter, CharacterWithStatus, Direction, Inventory, Status};
 use crate::collision::CollisionHandler;
@@ -24,7 +25,8 @@ pub(crate) const BOTTOM_WALL: f32 = -300.;
 pub(crate) const TOP_WALL: f32 = 300.;
 
 const SCOREBOARD_FONT_SIZE: f32 = 20.0;
-const SCOREBOARD_TEXT_PADDING: Val = Val::Px(10.0);
+const SCORE_BASIC_TEXT_PADDING: Val = Val::Px(10.0);
+const SCORE_NAUGHTY_TEXT_PADDING_LEFT: Val = Val::Px(WINDOW_WIDTH - 120.);
 
 const WALL_COLOR: Color = Color::rgb(0.8, 0.8, 0.8);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
@@ -33,11 +35,15 @@ const SCORE_COLOR: Color = Color::rgb(0.1, 0.1, 0.1);
 
 fn update_stats(
     player_query: Query<(&Status, &Inventory), With<CharacterMarker>>,
-    mut query: Query<&mut Text, With<Scoreboard>>,
+    mut query_nice: Query<&mut Text, With<CounterNice>>,
+    mut query_naughty: Query<&mut Text, (With<Health>, Without<CounterNice>)>,
 ) {
-    if let Ok((_status, inventory)) = player_query.get_single() {
-        let mut text = query.single_mut();
+    if let Ok((status, inventory)) = player_query.get_single() {
+        let mut text = query_nice.single_mut();
         text.sections[1].value = inventory.number_of_presents().to_string();
+
+        let mut text = query_naughty.single_mut();
+        text.sections[1].value = status.health.to_string();
     }
 }
 
@@ -170,14 +176,17 @@ fn setup_walls(mut commands: Commands) {
 }
 
 #[derive(Component)]
-struct Scoreboard;
+struct CounterNice;
+
+#[derive(Component)]
+struct Health;
 
 fn setup_scoreboard(mut commands: Commands) {
-    // Scoreboard
+    // Scoreboard: present counters
     commands.spawn(
         (TextBundle::from_sections([
             TextSection::new(
-                "Score: ",
+                "Presents: ",
                 TextStyle {
                     font_size: SCOREBOARD_FONT_SIZE,
                     color: TEXT_COLOR,
@@ -192,10 +201,33 @@ fn setup_scoreboard(mut commands: Commands) {
         ])
         .with_style(Style {
             position_type: PositionType::Absolute,
-            top: SCOREBOARD_TEXT_PADDING,
-            left: SCOREBOARD_TEXT_PADDING,
+            top: SCORE_BASIC_TEXT_PADDING,
+            left: SCORE_BASIC_TEXT_PADDING,
             ..default()
-        }), Scoreboard),
+        }), CounterNice),
+    );
+    commands.spawn(
+        (TextBundle::from_sections([
+            TextSection::new(
+                "Health: ",
+                TextStyle {
+                    font_size: SCOREBOARD_FONT_SIZE,
+                    color: TEXT_COLOR,
+                    ..default()
+                },
+            ),
+            TextSection::from_style(TextStyle {
+                font_size: SCOREBOARD_FONT_SIZE,
+                color: SCORE_COLOR,
+                ..default()
+            }),
+        ])
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            top: SCORE_BASIC_TEXT_PADDING,
+            left: SCORE_NAUGHTY_TEXT_PADDING_LEFT,
+            ..default()
+        }), Health),
     );
 }
 
