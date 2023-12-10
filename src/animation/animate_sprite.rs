@@ -15,8 +15,9 @@ use crate::{
     characters::{CharacterState, Direction, Status},
     markers::CharacterMarker,
     moveable::Moveable,
-    setup::WALL_THICKNESS,
-    WINDOW_HEIGHT, WINDOW_WIDTH,
+    setup::{
+        CHARACTER_BOTTOM_BOUND, CHARACTER_LEFT_BOUND, CHARACTER_RIGHT_BOUND, CHARACTER_TOP_BOUND,
+    },
 };
 
 use super::{AnimationIndices, AnimationTimer, PingPong};
@@ -150,10 +151,8 @@ fn handle_back(
     delta_seconds: f32,
 ) -> (usize, PingPong) {
     let new_position = transform.translation.y - 300. * delta_seconds;
-    let top_bound = (WINDOW_HEIGHT / 2.) - 30. / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
-    let bottom_bound = -(WINDOW_HEIGHT / 2.) + WALL_THICKNESS / 2.0 + 18.0; // TODO replace 5 with character height/2 + padding
 
-    transform.translation.y = new_position.clamp(bottom_bound, top_bound);
+    transform.translation.y = new_position.clamp(CHARACTER_BOTTOM_BOUND, CHARACTER_TOP_BOUND);
 
     determine_frame_moving(
         indices.back_start..=indices.back_end,
@@ -172,10 +171,8 @@ fn handle_forward(
     delta_seconds: f32,
 ) -> (usize, PingPong) {
     let new_position = transform.translation.y + 300. * delta_seconds;
-    let top_bound = (WINDOW_HEIGHT / 2.) - 30. / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
-    let bottom_bound = -(WINDOW_HEIGHT / 2.) + WALL_THICKNESS / 2.0 + 18.0; // TODO replace 5 with character height/2 + padding
 
-    transform.translation.y = new_position.clamp(bottom_bound, top_bound);
+    transform.translation.y = new_position.clamp(CHARACTER_BOTTOM_BOUND, CHARACTER_TOP_BOUND);
 
     determine_frame_moving(
         indices.forward_start..=indices.forward_end,
@@ -194,10 +191,7 @@ fn handle_left(
     delta_seconds: f32,
 ) -> (usize, PingPong) {
     let new_position = transform.translation.x - 300. * delta_seconds;
-    let left_bound = -(WINDOW_WIDTH / 2.) + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
-    let right_bound = (WINDOW_WIDTH / 2.) - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
-
-    transform.translation.x = new_position.clamp(left_bound, right_bound);
+    transform.translation.x = new_position.clamp(CHARACTER_LEFT_BOUND, CHARACTER_RIGHT_BOUND);
 
     determine_frame_moving(
         indices.left_start..=indices.left_end,
@@ -216,10 +210,8 @@ fn handle_right(
     delta_seconds: f32,
 ) -> (usize, PingPong) {
     let new_position = transform.translation.x + 300. * delta_seconds;
-    let left_bound = -(WINDOW_WIDTH / 2.) + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
-    let right_bound = (WINDOW_WIDTH / 2.) - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
 
-    transform.translation.x = new_position.clamp(left_bound, right_bound);
+    transform.translation.x = new_position.clamp(CHARACTER_LEFT_BOUND, CHARACTER_RIGHT_BOUND);
 
     determine_frame_moving(
         indices.right_start..=indices.right_end,

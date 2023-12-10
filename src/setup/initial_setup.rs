@@ -11,6 +11,7 @@ use crate::present::{Present, PresentType};
 use crate::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use bevy::prelude::*;
 
+use bevy::utils::HashSet;
 use bevy_ecs_ldtk::{
     LdtkPlugin, LdtkSettings, LdtkWorldBundle, LevelSelection, LevelSpawnBehavior,
 };
@@ -38,8 +39,15 @@ const SCORE_COLOR: Color = Color::rgb(0.1, 0.1, 0.1);
 
 // Coordinate range for spawning presents, make sure we don't spawn partially outside the screen
 // or on the back wall.
-const X_RANGE: Range<f32> = -(WINDOW_WIDTH + 24.) / 20.0..(WINDOW_WIDTH - 24.) / 20.0;
-const Y_RANGE: Range<f32> = -(WINDOW_HEIGHT + 24.) / 20.0..(WINDOW_HEIGHT - 48.) / 20.0;
+pub(crate) const CHARACTER_TOP_BOUND: f32 = (WINDOW_HEIGHT / 2.) - 30. / 2.0 - 15.0; // TODO replace 5 with character height/2 + padding
+pub(crate) const CHARACTER_BOTTOM_BOUND: f32 = -(WINDOW_HEIGHT / 2.) + WALL_THICKNESS / 2.0 + 18.0; // TODO replace 5 with character height/2 + padding
+pub(crate) const CHARACTER_LEFT_BOUND: f32 = -(WINDOW_WIDTH / 2.) + WALL_THICKNESS / 2.0 + 8.0; // TODO replace 5 with character width/2 + padding
+pub(crate) const CHARACTER_RIGHT_BOUND: f32 = (WINDOW_WIDTH / 2.) - WALL_THICKNESS / 2.0 - 8.0; // TODO replace 5 with character width/2 + padding
+
+const X_RANGE: Range<i32> =
+    ((CHARACTER_LEFT_BOUND / 10.) as i32)..((CHARACTER_RIGHT_BOUND / 10.) as i32);
+const Y_RANGE: Range<i32> =
+    ((CHARACTER_BOTTOM_BOUND / 10.) as i32)..((CHARACTER_TOP_BOUND / 10.) as i32);
 
 fn update_stats(
     player_query: Query<(&Status, &Inventory), With<CharacterMarker>>,
@@ -158,6 +166,12 @@ fn setup_presents(mut commands: Commands, asset_server: Res<AssetServer>) {
     let red_present = "sprites/Gifts_Red.png".to_string();
     let green_present = "sprites/Gifts_Green.png".to_string();
 
+    let mut locations_spawned = HashSet::new();
+    // skip character spawn location
+    locations_spawned.insert((0, 0));
+
+    println!("{X_RANGE:?}");
+    println!("{Y_RANGE:?}");
     for count in 0..10 {
         let (present_type, current_present_image) = if count < 5 {
             (PresentType::Naughty(20), &red_present)
@@ -166,13 +180,21 @@ fn setup_presents(mut commands: Commands, asset_server: Res<AssetServer>) {
         };
 
         // Range is set to a tenth of screen size and then multiplied up to cut down on clustering of presents
-        let x = rng.gen_range(X_RANGE) * 10.;
-        let y = rng.gen_range(Y_RANGE) * 10.;
+        let mut x = rng.gen_range(X_RANGE) * 10;
+        let mut y = rng.gen_range(Y_RANGE) * 10;
+
+        // loop until we get a unique location
+        while !locations_spawned.insert((x as u32, y as u32)) {
+            x = rng.gen_range(X_RANGE) * 10;
+            y = rng.gen_range(Y_RANGE) * 10;
+        }
+
+        println!("Spawning present at {x:.5}, {y:.5}");
 
         commands.spawn((
             SpriteBundle {
                 texture: asset_server.load(current_present_image),
-                transform: Transform::from_xyz(x, y, 5.),
+                transform: Transform::from_xyz(x as f32, y as f32, 5.),
                 ..Default::default()
             },
             Present::new(present_type),
@@ -207,8 +229,8 @@ struct Health;
 
 fn setup_scoreboard(mut commands: Commands) {
     // Scoreboard: present counters
-    commands.spawn(
-        (TextBundle::from_sections([
+    commands.spawn((
+        TextBundle::from_sections([
             TextSection::new(
                 "Presents: ",
                 TextStyle {
@@ -228,10 +250,11 @@ fn setup_scoreboard(mut commands: Commands) {
             top: SCORE_BASIC_TEXT_PADDING,
             left: SCORE_BASIC_TEXT_PADDING,
             ..default()
-        }), CounterNice),
-    );
-    commands.spawn(
-        (TextBundle::from_sections([
+        }),
+        CounterNice,
+    ));
+    commands.spawn((
+        TextBundle::from_sections([
             TextSection::new(
                 "Health: ",
                 TextStyle {
@@ -251,8 +274,9 @@ fn setup_scoreboard(mut commands: Commands) {
             top: SCORE_BASIC_TEXT_PADDING,
             left: SCORE_NAUGHTY_TEXT_PADDING_LEFT,
             ..default()
-        }), Health),
-    );
+        }),
+        Health,
+    ));
 }
 
 #[derive(Component)]
