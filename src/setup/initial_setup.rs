@@ -207,8 +207,11 @@ fn setup_presents(mut commands: Commands, asset_server: Res<AssetServer>) {
 fn setup_audio(asset_server: Res<AssetServer>, mut commands: Commands) {
     commands.spawn((
         AudioBundle {
-            source: asset_server.load("sounds/Windless Slopes.ogg"),
-            ..default()
+            source: asset_server.load("sounds/Naughty_n_Nice.ogg"),
+            settings: PlaybackSettings {
+                mode: bevy_audio::PlaybackMode::Loop,
+                ..Default::default()
+            },
         },
         Audio,
     ));
