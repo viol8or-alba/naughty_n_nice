@@ -71,7 +71,7 @@ fn hit_test_presents(
 /// Compare the number of presents in the inventory with the win condition and
 /// set the player celebrating if the win condition is met.
 fn check_and_update_win_condition(inventory: &Inventory, status: &mut Status) {
-    if inventory.number_of_presents() == 1 {
+    if inventory.number_of_presents() == 5 {
         status.celebrate();
     }
 }
