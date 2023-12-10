@@ -17,6 +17,7 @@ impl Inventory {
     /// Add a present to this [`Inventory`].
     pub(crate) fn add_present(&mut self) {
         self.number_of_presents += 1;
+        println!("Presents: {}", self.number_of_presents);
     }
 
     /// Returns the number of presents in this [`Inventory`].

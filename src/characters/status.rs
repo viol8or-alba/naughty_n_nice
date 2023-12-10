@@ -34,6 +34,7 @@ impl Status {
         }
 
         self.health -= to_remove;
+        println!("Health: {}", self.health);
 
         if self.health == 0 {
             self.state = CharacterState::Dead;

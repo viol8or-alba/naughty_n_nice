@@ -7,12 +7,14 @@ use crate::control_input::ControlInput;
 use crate::game_audio::Audio;
 use crate::markers::CameraMarker;
 use crate::moveable::{Moveable, Speed};
-use crate::present::Present;
+use crate::present::{Present, PresentType};
+use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use bevy::prelude::*;
 
 use bevy_ecs_ldtk::{
     LdtkPlugin, LdtkSettings, LdtkWorldBundle, LevelSelection, LevelSpawnBehavior,
 };
+use rand::Rng;
 
 /* Constants */
 
@@ -126,14 +128,34 @@ fn setup_player(
 
 /// Randomly spawn presents.
 fn setup_presents(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn((
-        SpriteBundle {
-            texture: asset_server.load("sprites/Gifts_Green.png"),
-            transform: Transform::from_xyz(100., 100., 5.),
-            ..Default::default()
-        },
-        Present::new(crate::present::PresentType::Nice),
-    ));
+    let mut rng = rand::thread_rng();
+    let red_present = "sprites/Gifts_Red.png".to_string();
+    let green_present = "sprites/Gifts_Green.png".to_string();
+
+    for count in 0..10 {
+        let present_type = if count < 5 {
+            PresentType::Naughty(20)
+        } else {
+            PresentType::Nice
+        };
+
+        let current_present_image = if rand::random() {
+            &red_present
+        } else {
+            &green_present
+        };
+        let x = rng.gen_range(-SCREEN_WIDTH / 2.0..SCREEN_WIDTH / 2.0);
+        let y = rng.gen_range(-SCREEN_HEIGHT / 2.0..SCREEN_HEIGHT / 2.0);
+
+        commands.spawn((
+            SpriteBundle {
+                texture: asset_server.load(current_present_image),
+                transform: Transform::from_xyz(x, y, 5.),
+                ..Default::default()
+            },
+            Present::new(present_type),
+        ));
+    }
 }
 
 /// Load the background audio into the asset server.
