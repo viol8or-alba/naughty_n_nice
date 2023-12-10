@@ -23,6 +23,7 @@ pub(crate) enum GameState {
     Game,
     #[default]
     Menu,
+    Win,
 }
 
 fn main() {

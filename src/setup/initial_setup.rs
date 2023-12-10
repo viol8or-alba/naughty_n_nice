@@ -87,7 +87,7 @@ impl Plugin for InitialSetup {
             .add_plugins(AnimateSprite)
             .add_plugins(ControlInput)
             .add_plugins(CollisionHandler)
-            .add_systems(Update, (bevy::window::close_on_esc, update_stats));
+            .add_systems(Update, (bevy::window::close_on_esc, update_stats, end_game));
     }
 }
 
@@ -355,4 +355,67 @@ impl WallBundle {
             collider: Collider,
         }
     }
+}
+
+// Check for win screen condition
+
+
+fn end_game(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut player_query: Query<(&mut Status, &mut Inventory), With<CharacterMarker>>,
+) {
+    let Ok((status, inventory)) = player_query.get_single() else {
+        return;
+    };
+
+    if inventory.number_of_presents() != 5 {
+        return;
+    }
+
+    commands
+        .spawn((NodeBundle {
+            style: Style {
+                align_self: AlignSelf::Stretch,
+                align_items: AlignItems::Start,
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
+            ..default()
+        },))
+        .with_children(|parent| {
+            // Display splash bitmap
+            let splash_image: Handle<Image> = asset_server.load("images/splash.png");
+            parent
+                .spawn(ImageBundle {
+                    style: Style {
+                        align_self: AlignSelf::End,
+                        width: Val::Px(480.),
+                        height: Val::Px(288.),
+                        justify_content: JustifyContent::SpaceAround,
+                        flex_direction: FlexDirection::Column,
+                        ..Default::default()
+                    },
+                    image: UiImage::new(splash_image),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    // Display the game name
+                    parent.spawn(
+                        TextBundle::from_section(
+                            "You win!!",
+                            TextStyle {
+                                font_size: 35.0,
+                                color: TEXT_COLOR,
+                                ..default()
+                            },
+                        )
+                        .with_style(Style {
+                            margin: UiRect::all(Val::Px(10.0)),
+                            align_self: AlignSelf::End,
+                            ..default()
+                        }),
+                    );
+                });
+        });
 }

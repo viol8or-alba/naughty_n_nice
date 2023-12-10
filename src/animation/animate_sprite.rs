@@ -82,12 +82,14 @@ fn animate_sprite(
 
                     if sprite.index == indices.celebrate_end {
                         status.end_celebration();
+                        status.game_over = true;
                     }
                 }
                 CharacterState::Dead => {
                     // Run death animation once
                     (sprite.index, *ping_pong) =
-                        determine_frame_oneshot(indices.die_start..=indices.die_end, &sprite.index)
+                        determine_frame_oneshot(indices.die_start..=indices.die_end, &sprite.index);
+                        status.game_over = true;
                 }
             }
         }
