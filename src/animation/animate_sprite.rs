@@ -82,12 +82,19 @@ fn animate_sprite(
 
                     if sprite.index == indices.celebrate_end {
                         status.end_celebration();
+                        timer.0.tick(delta);
+                        status.game_over = true;
                     }
                 }
                 CharacterState::Dead => {
                     // Run death animation once
                     (sprite.index, *ping_pong) =
-                        determine_frame_oneshot(indices.die_start..=indices.die_end, &sprite.index)
+                        determine_frame_oneshot(indices.die_start..=indices.die_end, &sprite.index);
+
+                    if sprite.index == indices.die_end {
+                        timer.0.tick(delta);
+                        status.game_over = true;
+                    }
                 }
             }
         }
@@ -150,7 +157,7 @@ fn handle_back(
     transform: &mut Transform,
     delta_seconds: f32,
 ) -> (usize, PingPong) {
-    let new_position = transform.translation.y - 300. * delta_seconds;
+    let new_position = transform.translation.y - 600. * delta_seconds;
 
     transform.translation.y = new_position.clamp(CHARACTER_BOTTOM_BOUND, CHARACTER_TOP_BOUND);
 
@@ -170,7 +177,7 @@ fn handle_forward(
     transform: &mut Transform,
     delta_seconds: f32,
 ) -> (usize, PingPong) {
-    let new_position = transform.translation.y + 300. * delta_seconds;
+    let new_position = transform.translation.y + 600. * delta_seconds;
 
     transform.translation.y = new_position.clamp(CHARACTER_BOTTOM_BOUND, CHARACTER_TOP_BOUND);
 
@@ -190,7 +197,7 @@ fn handle_left(
     transform: &mut Transform,
     delta_seconds: f32,
 ) -> (usize, PingPong) {
-    let new_position = transform.translation.x - 300. * delta_seconds;
+    let new_position = transform.translation.x - 600. * delta_seconds;
     transform.translation.x = new_position.clamp(CHARACTER_LEFT_BOUND, CHARACTER_RIGHT_BOUND);
 
     determine_frame_moving(
@@ -209,7 +216,7 @@ fn handle_right(
     transform: &mut Transform,
     delta_seconds: f32,
 ) -> (usize, PingPong) {
-    let new_position = transform.translation.x + 300. * delta_seconds;
+    let new_position = transform.translation.x + 600. * delta_seconds;
 
     transform.translation.x = new_position.clamp(CHARACTER_LEFT_BOUND, CHARACTER_RIGHT_BOUND);
 

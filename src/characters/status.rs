@@ -7,6 +7,7 @@ use super::CharacterState;
 pub(crate) struct Status {
     state: CharacterState,
     pub(crate) health: u8,
+    pub(crate) game_over: bool,
 }
 
 impl Status {
@@ -15,6 +16,7 @@ impl Status {
         Self {
             state: CharacterState::Alive,
             health,
+            game_over: false,
         }
     }
 
