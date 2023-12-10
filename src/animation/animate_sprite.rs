@@ -90,11 +90,11 @@ fn animate_sprite(
                     // Run death animation once
                     (sprite.index, *ping_pong) =
                         determine_frame_oneshot(indices.die_start..=indices.die_end, &sprite.index);
-                    
-                        if sprite.index == indices.die_end {
-                            timer.0.tick(delta);
-                            status.game_over = true;
-                        }
+
+                    if sprite.index == indices.die_end {
+                        timer.0.tick(delta);
+                        status.game_over = true;
+                    }
                 }
             }
         }
